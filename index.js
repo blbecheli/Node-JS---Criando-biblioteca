@@ -1,17 +1,15 @@
 import chalk from 'chalk'; //modulo externo importado para colorir as informações do console
 import fs from 'fs'; //modulo interno do node usado para capturar arquivos
 
-function extraiLinks(texto){
+function extraiLinks(texto) {
   const regex = /\[([^\]]*)\]\((https?:\/\/[^$#\s].[^\s]*)\)/gm //regex (expressões regulares) é uma forma de buscar informações dentro de um texto (usa-se o site regex101 para ajudar)
   const arrayResultados = [];
   let temp;
-//No caso abaixo: while (enquanto, laço de repetição) a let temp receber o valor de regex.exec e este valor não for null (quando a regex não achar mais o termo ela retorna null) o laço irá continuar. Este laço vai empurrar (push) na const array resultados os valores encontrados. Ele irá criar um array de objetos. Para criar um objeto as chaves (no caso temp no índice 1) deve ser englobado por colchetes. O valor não precisa
-  while ((temp = regex.exec(texto)) !== null){
-    arrayResultados.push ({[temp[1]]: temp[2]})
+  //No caso abaixo: while (enquanto, laço de repetição) a let temp receber o valor de regex.exec e este valor não for null (quando a regex não achar mais o termo ela retorna null) o laço irá continuar. Este laço vai empurrar (push) na const array resultados os valores encontrados. Ele irá criar um array de objetos. Para criar um objeto as chaves (no caso temp no índice 1) deve ser englobado por colchetes. O valor não precisa
+  while ((temp = regex.exec(texto)) !== null) {
+    arrayResultados.push({ [temp[1]]: temp[2] })
   }
-  //const linksExtraidos = regex.exec(texto)//O método exec() executa a busca por um padrão em uma determinada string. Retorna um array, ou null. Ele separa os grupos dentro de uma regex
-  //const linksExtraidos = texto.match(regex) //O método match() retorna uma correspondência entre uma string com uma expressão regular.Como parametro foi passado a const regex, que possui uma expressão regular
- return arrayResultados
+  return arrayResultados.length === 0 ? 'Não há links': arrayResultados
 }
 
 
@@ -20,19 +18,20 @@ function trataErro(erro) {
 }
 
 //código assincrono - Utilizando o sync e await (mais modernos)
-async function pegaArquivo(caminhoDoArquivo){ //async indica para o JS que é uma função assincrona
+export default async function pegaArquivo(caminhoDoArquivo) { //async indica para o JS que é uma função assincrona
   const encoding = 'utf-8'
   try { //sintaxe try e catch - O try indica se a função for verdadeira e o catch caso dê erro
-    const texto = await fs.promises.readFile(caminhoDoArquivo,encoding) //indica ao JS que é para aguardar o valor desta constante
-  console.log(extraiLinks(texto));
-  }catch(erro){
+    const texto = await fs.promises.readFile(caminhoDoArquivo, encoding) //indica ao JS que é para aguardar o valor desta constante
+    return (extraiLinks(texto));
+  } catch (erro) {
     trataErro(erro);
   } finally { //Opcional, mas se usado sempre é executado, independente do try e do catch
     console.log(chalk.yellow('operação concluída'));
-  }  
+  }
 }
 
-pegaArquivo('./arquivos/texto1.md')
+//pegaArquivo('./arquivos/texto1.md')
+
 
 
 
